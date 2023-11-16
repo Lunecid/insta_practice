@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+
+{% block body %}
+
+<div class="row mt-5 ">
+    <div class="col-6">
+        <img src="{{post.image.url}}" alt="">
+    </div>
+    <div class="col-6"> 
+        <p>
+            <b>{{post.user}}</b>
+            {{post.content}}
+        </p>
+    </div>
+</div>
+
+<div class="row mt-3">
+    {% if user.is_authenticated %}
+        <form action="{% url 'posts:comment_create' post_id=post.id %}" method="POST">
+            {% csrf_token %}
+            {% bootstrap_form form %}
+            <input type="submit" class="btn btn-primary">
+        </form>
+    {% endif %}
+</div>
+
+<hr>
+    {% for comment in post.comment_set.all %}
+        <div class="alert alert-light">
+            {{comment.user}} : {{comment.content}}
+            {% if user == comment.user %}
+            <a class="btn btn-danger btn-sm" href="{% url 'posts:comment_delete' post_id=post.id id=comment.id %}">delete</a>
+            {% endif %}
+        </div>
+       
+        <br>
+    {% endfor %}
+
+{% endblock %}
